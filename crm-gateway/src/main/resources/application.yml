@@ -30,6 +30,6 @@ zuul:
       serviceId: service-customer
       sensitiveHeaders:
     api-b:
-      path: /order/**
-      serviceId: service-order
+      path: /user/**
+      serviceId: user-server
       sensitiveHeaders:
