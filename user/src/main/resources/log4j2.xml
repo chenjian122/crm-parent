@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="DEBUG">
+    <Properties>
+        <Property name="instance">user-log</Property>
+        <Property name="log.dir">/logs</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%date{yyyy-MM-dd HH:mm:ss.SSS}][%thread][%level][%class][%line]:%message%n" />
+        </Console>
+        <RollingRandomAccessFile name="infoLog" fileName="${log.dir}/${instance}-info.log"
+            filePattern="${log.dir}/%d{yyyy-MM}/${instance}-info-%d{yyyy-MM-dd}-%i.log.gz"
+            append="true">
+            <PatternLayout pattern="[%date{yyyy-MM-dd HH:mm:ss.SSS}][%thread][%level][%class][%line]:%message%n" />
+            <Filters>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="NEUTRAL" />
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <SizeBasedTriggeringPolicy size="1MB" />
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <!-- error级别的日志信息 -->
+        <RollingRandomAccessFile name="errorLog" fileName="${log.dir}/${instance}-error.log"
+            filePattern="${log.dir}/%d{yyyy-MM}/${instance}-error-%d{yyyy-MM-dd}-%i.log.gz"
+            append="true">
+            <PatternLayout  pattern="[%date{yyyy-MM-dd HH:mm:ss.SSS}][%thread][%level][%class][%line]:%message%n" />
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"  modulate="true" />
+                <SizeBasedTriggeringPolicy size="1MB" />
+            </Policies>
+        </RollingRandomAccessFile>
+
+    </Appenders>
+
+    <Loggers>
+        <logger name="org.springframework" level="info" additivity="true">
+            <AppenderRef ref="errorLog" />
+        </logger>
+        <logger name="java.sql.PreparedStatement" level="debug" additivity="true">
+            <AppenderRef ref="Console" />
+        </logger>
+        <!-- root logger 配置 -->
+        <Root level="info" includeLocation="true">
+            <AppenderRef ref="infoLog" />
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="errorLog" />
+        </Root>
+    </Loggers>
+
+</Configuration>
